@@ -2,10 +2,10 @@
 import java.net.*;
 import java.io.*;
 
-public class EngineTest{
+public class SocketServer{
 
     public static void main(String[] args) throws IOException {
-
+        System.out.println("SocketServer listening on 4444");
         ServerSocket serverSocket = null;
 
         try {

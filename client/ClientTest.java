@@ -9,7 +9,7 @@ public class ClientTest{
 	PrintWriter out;
 BufferedReader in;
 		try{
-			socket = new Socket("Think-PC",4444);
+			socket = new Socket("Ash18",4444);
 			out = new PrintWriter(socket.getOutputStream(),true);
 			in = new BufferedReader(new InputStreamReader( socket.getInputStream() ));
 Console cin = System.console();
