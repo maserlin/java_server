@@ -1,0 +1,50 @@
+/*
+	Goes in C:\xampp\tomcat\webapps\ROOT\WEB-INF\classes
+	Also need to add the following for each servlet into 
+	C:\xampp\tomcat\webapps\ROOT\WEB-INF\web.xml
+	<servlet>
+   <servlet-name>HelloWorld</servlet-name>
+   <servlet-class>HelloWorld</servlet-class>
+</servlet>
+
+<servlet-mapping>
+   <servlet-name>HelloWorld</servlet-name>
+   <url-pattern>/HelloWorld</url-pattern>
+</servlet-mapping>
+don't forget to add CLASSPATH=./;C:\xampp\tomcat\lib\servlet-api.jar somewhere, or in the javac cmd line when compiling
+*/
+
+// Import required java libraries
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+// Extend HttpServlet class
+public class HelloWorld2 extends HttpServlet {
+ 
+  private String message;
+
+  public void init() throws ServletException
+  {
+      // Do required initialization
+      message = "Hello World 2";
+  }
+
+  public void doGet(HttpServletRequest request,
+                    HttpServletResponse response)
+            throws ServletException, IOException
+  {
+      // Set response content type
+      response.setContentType("text/html");
+
+      // Actual logic goes here.
+      PrintWriter out = response.getWriter();
+      out.println("<h1>" + message + "</h1>");
+	  out.println("This is the response from the HelloWorld servlet running in tomcat at localhost:8080");
+  }
+  
+  public void destroy()
+  {
+      // do nothing.
+  }
+}
