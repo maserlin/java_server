@@ -35,7 +35,7 @@ public class Main {
         private WinObject winObject = new WinObject();
         private Random rng = new Random();
 
-        List<List<Integer>> reels_0 =Arrays.asList(Arrays.asList(7, 5, 3, 2, 0, 1, 3, 0, 2, 2, 0, 1, 3, 0, 2, 4, 5, 6, 7, 0, 4, 1, 0, 2, 3, 1, 8, 2, 4, 1, 0, 3, 2, 1, 0, 4, 6, 5, 7, 5, 3, 2, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 1),
+        List<List<Integer>> reels_0 = Arrays.asList(Arrays.asList(7, 5, 3, 2, 0, 1, 3, 0, 2, 2, 0, 1, 3, 0, 2, 4, 5, 6, 7, 0, 4, 1, 0, 2, 3, 1, 8, 2, 4, 1, 0, 3, 2, 1, 0, 4, 6, 5, 7, 5, 3, 2, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 1),
         Arrays.asList(1, 4, 5, 1, 6, 5, 0, 2, 1, 2, 0, 1, 3, 0, 2, 0, 3, 4, 0, 2, 3, 7, 6, 1, 4, 0, 3, 1, 2, 6, 7, 2, 1, 0, 4, 1, 0, 0, 7, 5, 3, 2, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 3),
         Arrays.asList(3, 1, 7, 5, 3, 0, 4, 1, 2, 0, 1, 3, 0, 2, 6, 5, 0, 1, 2, 0, 3, 2, 1, 3, 8, 2, 9, 8, 4, 0, 1, 3, 0, 2, 1, 4, 2, 5, 7, 5, 3, 2, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 7),
         Arrays.asList(0, 3, 2, 4, 1, 0, 3, 2, 0, 4, 3, 0, 1, 0, 2, 2, 0, 1, 3, 0, 2, 3, 0, 7, 6, 5, 1, 6, 5, 7, 2, 1, 0, 4, 1, 0, 0, 2, 7, 5, 3, 2, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 1),
@@ -50,7 +50,8 @@ public class Main {
 
         @Override
         public void handle(HttpExchange t) throws IOException {
-            System.out.println("Pixi engine received request " + t.toString());
+            System.out.print("Pixi engine received request: ");
+            String response = "";
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(t.getRequestBody()));
             StringBuilder requestXML = new StringBuilder();
@@ -59,29 +60,29 @@ public class Main {
                 requestXML.append(line);
             }
 
+            // Response headers
+            t.getResponseHeaders().set("Access-Control-Allow-Credentials", "true");
+            t.getResponseHeaders().set("Access-Control-Allow-Headers", "cache-control, content-type, if-none-match, pragma");
+            t.getResponseHeaders().set("Allow", "GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, PATCH");
+            t.getResponseHeaders().set("Access-Control-Allow-Origin", "http://localhost:8080");
+
+            // Set headers-only request
             if(requestXML.length() == 0){
-                t.getResponseHeaders().set("Access-Control-Allow-Credentials", "true");
-                t.getResponseHeaders().set("Access-Control-Allow-Headers", "cache-control, content-type, if-none-match, pragma");
-                t.getResponseHeaders().set("Allow", "GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, PATCH");
-                t.getResponseHeaders().set("Access-Control-Allow-Origin", "http://localhost:8080");
-                String response = "";
+                System.out.println("Headers");
                 t.sendResponseHeaders(200, response.length());
                 OutputStream os = t.getResponseBody();
                 os.write(response.getBytes());
                 os.close();
             }
+            // Game request: Bet only for this demo; init is not in the server
             else {
-                System.out.println("Received Request: " + requestXML.toString());
-                String response = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+                System.out.println("Bet: " + requestXML.toString());
+                response = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
                     "<PlaceBetResponse gameId=\"1\"><Jackpots/><Balances><Balance amount=\"398.70\" category=\"TOTAL\" currency=\"GBP\" name=\"Total\"/><Balance amount=\"398.70\" category=\"CASH\" currency=\"GBP\" name=\"Cash\"/></Balances><Outcome balance=\"398.70\">" +
                     getSpinResponse(requestXML) + //"<Spin layout=\"0\" maxWin=\"false\" position=\"2,7,12,5,29\" spinWin=\"0.70\" stake=\"2.00\" symbols=\"6,2,0,2,1,11,9,6,0,1,2,7,11,2,3\"><Winlines><Winline count=\"3\" id=\"7\" symbol=\"2\" symbols=\"2,2,9,1,2\" win=\"7\"/></Winlines></Spin>" +
                     "<DrawState drawId=\"0\" state=\"betting\"><Bet pick=\"\" seq=\"0\" stake=\"2.00\" type=\"L\" won=\"pending\"/></DrawState></Outcome></PlaceBetResponse>";
                 System.out.println("Responding with " + response);
 
-                t.getResponseHeaders().set("Access-Control-Allow-Credentials", "true");
-                t.getResponseHeaders().set("Access-Control-Allow-Headers", "cache-control, content-type, if-none-match, pragma");
-                t.getResponseHeaders().set("Allow", "GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, PATCH");
-                t.getResponseHeaders().set("Access-Control-Allow-Origin", "http://localhost:8080");
                 t.sendResponseHeaders(200, response.length());
                 OutputStream os = t.getResponseBody();
                 os.write(response.getBytes());
@@ -138,7 +139,7 @@ public class Main {
             }
             // else decide on bonus trigger
             else{
-                int r = rng.nextInt(1);
+                int r = rng.nextInt(15);
                 if( r == 0){
                     reelset = 1;
                 }
@@ -194,9 +195,7 @@ public class Main {
 
                 //<Winline count="3" id="7" symbol="2" symbols="2,2,9,1,2" win="7"/>
                 for (int win = 0; win < winObject.lines.size(); ++win) {
-                    System.out.println("Winning line " + winObject.lines.get(win) + " " + winObject.winline.get(win).toString());
-
-
+                    //System.out.println("Winning line " + winObject.lines.get(win) + " " + winObject.winline.get(win).toString());
 
                     response.append("<Winline count=\"" + winObject.winline.get(win).size() + "\" ");
                     response.append("id=\"" + winObject.lines.get(win) + "\" ");
@@ -209,16 +208,12 @@ public class Main {
                     response.append("win=\"" + winObject.winAmount.get(win) + "\">");
                     response.append("</Winline>");
                 }
-
-
                 response.append("</Winlines>");
             }
+            else{
+                response.append("<Winlines></Winlines>");
+            }
             response.append("</Spin>");
-
-
-
-
-
 
             return response.toString();//"<Spin layout=\"0\" maxWin=\"false\" position=\"2,7,12,5,29\" spinWin=\"0.70\" stake=\"2.00\" symbols=\"6,2,0,2,1,11,9,6,0,1,2,7,11,2,3\"><Winlines><Winline count=\"3\" id=\"7\" symbol=\"2\" symbols=\"2,2,9,1,2\" win=\"7\"/></Winlines></Spin>";
         }
@@ -269,7 +264,7 @@ public class Main {
                 for(int pos=0; pos<winline.size(); ++pos){
                     symbolsOnWinline.add(reelMap.get(pos).get(winline.get(pos)));
                 }
-                System.out.println(symbolsOnWinline);
+                //System.out.println(symbolsOnWinline);
 
                 analyseSymbols(line, symbolsOnWinline);
             }
